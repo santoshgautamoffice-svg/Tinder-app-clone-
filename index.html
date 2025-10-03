@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinder Clone</title>
+    <!-- Font Awesome for icons -->
+    <script src="https://kit.fontawesome.com/f9e19193d6.js" crossorigin="anonymous"></script>
+    <style>
+        /* CSS Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .tinder-clone {
+            width: 375px;
+            height: 667px;
+            background: #f7f7f7;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        .navbar i {
+            color: #fd5068;
+            font-size: 30px;
+        }
+        .photo-and-actions {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        .photo {
+            width: 100%;
+            height: 80%;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .photo-text {
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        .photo-name-and-age {
+            display: flex;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .photo-bio {
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+        .action {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .action:hover {
+            transform: scale(1.1);
+        }
+        .action i {
+            font-size: 28px;
+        }
+        #dislike i { color: #fd5068; }
+        #star i { color: #2db9b3; }
+        #like i { color: #1be4a1; }
+    </style>
+</head>
+<body>
+    <!-- HTML Structure -->
+    <div class="tinder-clone">
+        <nav class="navbar">
+            <i class="fa-solid fa-fire"></i>
+        </nav>
+
+        <div class="photo-and-actions">
+            <div id="profile-card" class="photo">
+                <div class="photo-text">
+                    <div class="photo-name-and-age">
+                        <h2 id="profile-name"></h2>
+                        <h2 id="profile-age"></h2>
+                    </div>
+                    <div id="profile-bio" class="photo-bio"></div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <div class="action" id="dislike">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="action" id="star">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="action" id="like">
+                    <i class="fas fa-heart"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const profiles = [
+            {
+                name: 'Maria',
+                age: 22,
+                bio: 'Living life one adventure at a time. Looking for a hiking partner.',
+                imageUrl: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1887'
+            },
+            {
+                name: 'Jessica',
+                age: 25,
+                bio: 'Just a girl who loves coffee, books, and rainy days.',
+                imageUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1887'
+            },
+            {
+                name: 'Alex',
+                age: 24,
+                bio: 'Artist and dog lover. My dog probably has more friends than I do.',
+                imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887'
+            },
+            {
+                name: 'Chloe',
+                age: 27,
+                bio: 'Foodie and travel enthusiast. Swipe right if you can recommend a good taco spot.',
+                imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1887'
+            }
+        ];
+
+        let currentProfileIndex = 0;
+
+        const profileCard = document.getElementById('profile-card');
+        const profileName = document.getElementById('profile-name');
+        const profileAge = document.getElementById('profile-age');
+        const profileBio = document.getElementById('profile-bio');
+
+        const dislikeBtn = document.getElementById('dislike');
+        const starBtn = document.getElementById('star');
+        const likeBtn = document.getElementById('like');
+
+        function loadProfile(index) {
+            const profile = profiles[index];
+            profileName.textContent = profile.name;
+            profileAge.textContent = profile.age;
+            profileBio.textContent = profile.bio;
+            // A random query parameter is added to the URL to avoid browser caching issues with images.
+            profileCard.style.backgroundImage = `url('${profile.imageUrl}&v=${Date.now()}')`;
+        }
+
+        function showNextProfile() {
+            currentProfileIndex = (currentProfileIndex + 1) % profiles.length;
+            loadProfile(currentProfileIndex);
+        }
+
+        // Add event listeners to buttons
+        dislikeBtn.addEventListener('click', showNextProfile);
+        starBtn.addEventListener('click', showNextProfile);
+        likeBtn.addEventListener('click', () => {
+            // In a real app, this is where you'd send data to a server to check for a match.
+            console.log('You liked ' + profiles[currentProfileIndex].name);
+            showNextProfile();
+        });
+
+        // Load the first profile when the page loads
+        window.addEventListener('load', () => {
+            loadProfile(currentProfileIndex);
+        });
+    </script>
+</body>
+</html>
